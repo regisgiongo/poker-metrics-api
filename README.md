@@ -15,3 +15,7 @@ Gerar um personal token:
 https://github.com/settings/tokens
 
 Copiar o mesmo e inserir no valor da propriedade ```token:```dentro do config/github.js
+
+Por enquanto ignora a moficação do arquivo quando inserido o token:
+
+git update-index --assume-unchanged config/github.js
