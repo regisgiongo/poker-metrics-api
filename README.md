@@ -4,7 +4,7 @@ npm install
 
 npm install -g babel-node
 
-npm run start
+babel-node index
 
 sudo nano /etc/hosts
 
