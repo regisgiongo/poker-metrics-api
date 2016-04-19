@@ -8,7 +8,7 @@ let api = new Github({
 
 api.authenticate({
   type: 'oauth',
-  token: '943f1a03fec32a75162c2a3747a8998a124c872f'
+  token: ''
 });
 
 export default api;
