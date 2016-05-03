@@ -4,18 +4,43 @@ import {onlySprintMilestones, getPoints} from '../utils/utils';
 
 const USER = 'ContaAzul';
 const REPO = 'alcatraz';
-const ENDPOINTS = ['roadmap', 'bug', 'marketing', 'Cliente', 'métricas', 'AX', 'IS'];
+const ENDPOINTS = [{
+      name: 'roadmap'
+    }, {
+      name: 'bug'
+    }, {
+      name: 'marketing'
+    }, {
+      name: 'Cliente',
+      grouped: 'marketing'
+    }, {
+      name: 'métricas',
+      grouped: 'marketing'
+    }, {
+      name: 'AX',
+      grouped: 'marketing'
+    }, {
+      name: 'IS',
+      grouped: 'marketing'
+    }];
 
-export function pointsPerEndpoints(callback) {
+export function pointsPerEndpoints(callback, grouped) {
   getTagsPointsByMilestone((milestoneTagsPoints) => {
-    var sumPointsTags = getEndpointsInitialValues();
+    var sumPointsTags = getEndpointsInitialValues(grouped);
     for (var milestone in milestoneTagsPoints) {
       var endpoints = milestoneTagsPoints[milestone];
-      for (var endpoint in milestoneTagsPoints[milestone])
-        sumPointsTags[endpoint] += milestoneTagsPoints[milestone][endpoint];
+      for (var endpoint in milestoneTagsPoints[milestone]) {
+        var customEndpoint = (grouped) ? group(endpoint) : endpoint;
+        sumPointsTags[customEndpoint] += milestoneTagsPoints[milestone][endpoint];
+      }
     }
     callback(sumPointsTags);
   });
+
+  function group(endpoint) {
+    endpoint = getEndpoint(endpoint);
+    return (endpoint.grouped) ? endpoint.grouped : endpoint.name;
+  }
 }
 
 function getTagsPointsByMilestone(callback) {
@@ -53,10 +78,11 @@ function getTagsPointsByMilestone(callback) {
   });
 }
 
-function getEndpointsInitialValues() {
+function getEndpointsInitialValues(isGrouped) {
   var obj = {};
   for (var i = 0; i < ENDPOINTS.length; i++) {
-    obj[ENDPOINTS[i]] = 0;
+    if (isGrouped && ENDPOINTS[i].grouped) continue;
+    obj[ENDPOINTS[i].name] = 0;
   }
   return obj;
 }
@@ -64,7 +90,12 @@ function getEndpointsInitialValues() {
 function getEndpointTag(tags) {
   return tags.filter( (tag) => {
     return ENDPOINTS.filter((endpoint) => {
-      return tag.name === endpoint;
+      return tag.name === endpoint.name;
     }).length;
   } )[0];
+}
+
+function getEndpoint(key) {
+  for (var i = 0; i < ENDPOINTS.length; i++)
+    if (ENDPOINTS[i].name === key) return ENDPOINTS[i];
 }

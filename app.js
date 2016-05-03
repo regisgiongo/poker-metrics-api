@@ -26,6 +26,12 @@ app.get('/endpoints', (req, res) => {
   });
 });
 
+app.get('/endpoints/grouped', (req, res) => {
+  pointsPerEndpoints(function(pointsPerEndpoints) {
+    res.json(pointsPerEndpoints);
+  }, true);
+});
+
 app.listen(3000, function() {
   console.log('Server started on port 3000!');
 });
