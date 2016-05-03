@@ -1,38 +1,10 @@
 import github from '../config/github';
 import async from 'async';
+import {onlySprintMilestones, getPoints} from '../utils/utils';
 
 const USER = 'ContaAzul';
 const REPO = 'alcatraz';
-const ENDPOINTS = ['roadmap', 'bug', 'marketing'];
-
-export function pointsPerSprint(callback) {
-  github.issues.getAllMilestones({
-    user: USER,
-    repo: REPO,
-    state: 'closed',
-    per_page: 100
-  }, (err, res) => {
-    let milestones = onlySprintMilestones(res);
-    let points = {};
-
-    async.each(milestones, (milestone, next) => {
-      points[milestone.title] = 0;
-      github.issues.repoIssues({
-        user: USER,
-        repo: REPO,
-        filter: 'all',
-        state: 'all',
-        milestone: milestone.number,
-        per_page: 100
-      }, (err, issues) => {
-        points[milestone.title] = sumIssuesPoints(issues);
-        next();
-      });
-    }, () => {
-      callback(points);
-    });
-  });
-}
+const ENDPOINTS = ['roadmap', 'bug', 'marketing', 'Cliente', 'métricas', 'AX', 'IS'];
 
 export function pointsPerEndpoints(callback) {
   getTagsPointsByMilestone((milestoneTagsPoints) => {
@@ -46,8 +18,6 @@ export function pointsPerEndpoints(callback) {
   });
 }
 
-
-// Cria um service só para os pontos por endpoint
 function getTagsPointsByMilestone(callback) {
   github.issues.getAllMilestones({
     user: USER,
@@ -97,22 +67,4 @@ function getEndpointTag(tags) {
       return tag.name === endpoint;
     }).length;
   } )[0];
-}
-
-// Outro service
-function onlySprintMilestones(milestones) {
-  return milestones.filter( (item) => {
-    return item.title.indexOf('Sprint') > -1;
-  });
-}
-
-function sumIssuesPoints(issues) {
-  return issues.reduce( (pointsAccumulated, issue) => {
-    return pointsAccumulated + getPoints(issue);
-  }, 0);
-}
-
-function getPoints(issue) {
-  let point = issue.title.match(/{(\d+)}/) ? issue.title.match(/{(\d+)}/)[1] : 0;
-  return parseInt(point);
 }

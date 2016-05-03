@@ -1,7 +1,7 @@
 'use strict';
 import express from 'express';
 import path from 'path';
-import {pointsPerSprint, pointsPerEndpoints} from './utils/metrics';
+import {pointsPerSprint, pointsPerEndpoints} from './graphics/index';
 
 let app = express();
 let allowCrossDomain = function(req, res, next) {
