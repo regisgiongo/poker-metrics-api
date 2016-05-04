@@ -8,6 +8,7 @@ let allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     next();
 };
+const env = process.env;
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -32,6 +33,6 @@ app.get('/endpoints/grouped', (req, res) => {
   }, true);
 });
 
-app.listen(3000, function() {
-  console.log('Server started on port 3000!');
+app.listen(env.NODE_PORT || 3000, env.NODE_IP || 'localhost', function() {
+  console.log(`Application worker ${process.pid} started...`);
 });
