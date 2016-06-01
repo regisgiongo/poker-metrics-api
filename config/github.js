@@ -8,12 +8,10 @@ const api = new Github({
 });
 
 export default function(team) {
-  // return function() {
-    api.authenticate({
-      type: 'oauth',
-      token: settings.github[team].token
-    });
+  api.authenticate({
+    type: 'oauth',
+    token: settings.github[team].token
+  });
 
-    return api;
-  // }
+  return api;
 };
