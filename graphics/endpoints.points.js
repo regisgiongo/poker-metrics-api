@@ -1,9 +1,8 @@
 import github from '../config/github';
 import async from 'async';
+import settings from 'config';
 import {onlySprintMilestones, getPoints} from '../utils/utils';
 
-const USER = 'ContaAzul';
-const REPO = 'alcatraz';
 const ENDPOINTS = [{
       name: 'roadmap'
     }, {
@@ -24,7 +23,10 @@ const ENDPOINTS = [{
       grouped: 'marketing'
     }];
 
-export function pointsPerEndpoints(callback, grouped) {
+export function pointsPerEndpoints(team, callback, grouped) {
+  let githubApi = github(team);
+  let access = settings.github[team];
+
   getTagsPointsByMilestone((milestoneTagsPoints) => {
     var sumPointsTags = getEndpointsInitialValues(grouped);
     for (var milestone in milestoneTagsPoints) {
@@ -41,61 +43,61 @@ export function pointsPerEndpoints(callback, grouped) {
     endpoint = getEndpoint(endpoint);
     return (endpoint.grouped) ? endpoint.grouped : endpoint.name;
   }
-}
 
-function getTagsPointsByMilestone(callback) {
-  github.issues.getAllMilestones({
-    user: USER,
-    repo: REPO,
-    state: 'closed',
-    per_page: 100
-  }, (err, res) => {
-    let milestones = onlySprintMilestones(res);
-    var issuesByEndpoint = {};
+  function getTagsPointsByMilestone(callback) {
+    githubApi.issues.getAllMilestones({
+      user: access.user,
+      repo: access.repo,
+      state: 'closed',
+      per_page: 100
+    }, (err, res) => {
+      let milestones = onlySprintMilestones(res);
+      var issuesByEndpoint = {};
 
-    async.each(milestones, (milestone, next) => {
-      issuesByEndpoint[milestone.title] = getEndpointsInitialValues();
-      github.issues.repoIssues({
-        user: USER,
-        repo: REPO,
-        filter: 'all',
-        state: 'all',
-        milestone: milestone.number,
-        per_page: 100
-      }, (err, issues) => {
-        for (var i = 0; i < issues.length; i++) {
-          let tags = issues[i].labels;
-          if (getEndpointTag(tags)){
-            var tag = getEndpointTag(tags).name;
-            issuesByEndpoint[milestone.title][tag] += getPoints(issues[i]);
+      async.each(milestones, (milestone, next) => {
+        issuesByEndpoint[milestone.title] = getEndpointsInitialValues();
+        githubApi.issues.repoIssues({
+          user: access.user,
+          repo: access.repo,
+          filter: 'all',
+          state: 'all',
+          milestone: milestone.number,
+          per_page: 100
+        }, (err, issues) => {
+          for (var i = 0; i < issues.length; i++) {
+            let tags = issues[i].labels;
+            if (getEndpointTag(tags)){
+              var tag = getEndpointTag(tags).name;
+              issuesByEndpoint[milestone.title][tag] += getPoints(issues[i]);
+            }
           }
-        }
-        next();
+          next();
+        });
+      }, () => {
+        callback(issuesByEndpoint);
       });
-    }, () => {
-      callback(issuesByEndpoint);
     });
-  });
-}
-
-function getEndpointsInitialValues(isGrouped) {
-  var obj = {};
-  for (var i = 0; i < ENDPOINTS.length; i++) {
-    if (isGrouped && ENDPOINTS[i].grouped) continue;
-    obj[ENDPOINTS[i].name] = 0;
   }
-  return obj;
-}
 
-function getEndpointTag(tags) {
-  return tags.filter( (tag) => {
-    return ENDPOINTS.filter((endpoint) => {
-      return tag.name === endpoint.name;
-    }).length;
-  } )[0];
-}
+  function getEndpointsInitialValues(isGrouped) {
+    var obj = {};
+    for (var i = 0; i < ENDPOINTS.length; i++) {
+      if (isGrouped && ENDPOINTS[i].grouped) continue;
+      obj[ENDPOINTS[i].name] = 0;
+    }
+    return obj;
+  }
 
-function getEndpoint(key) {
-  for (var i = 0; i < ENDPOINTS.length; i++)
-    if (ENDPOINTS[i].name === key) return ENDPOINTS[i];
+  function getEndpointTag(tags) {
+    return tags.filter( (tag) => {
+      return ENDPOINTS.filter((endpoint) => {
+        return tag.name === endpoint.name;
+      }).length;
+    } )[0];
+  }
+
+  function getEndpoint(key) {
+    for (var i = 0; i < ENDPOINTS.length; i++)
+      if (ENDPOINTS[i].name === key) return ENDPOINTS[i];
+  }
 }

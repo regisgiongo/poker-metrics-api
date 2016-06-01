@@ -15,20 +15,23 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(allowCrossDomain);
 
-app.get('/issues', (req, res) => {
-  pointsPerSprint(function(points) {
+app.get('/:team/issues', (req, res) => {
+  let team = req.params.team;
+  pointsPerSprint(team, function(points) {
     res.json(points);
   });
 });
 
-app.get('/endpoints', (req, res) => {
-  pointsPerEndpoints(function(pointsPerEndpoints) {
+app.get('/:team/endpoints', (req, res) => {
+  let team = req.params.team;
+  pointsPerEndpoints(team, function(pointsPerEndpoints) {
     res.json(pointsPerEndpoints);
   });
 });
 
-app.get('/endpoints/grouped', (req, res) => {
-  pointsPerEndpoints(function(pointsPerEndpoints) {
+app.get('/:team/endpoints/grouped', (req, res) => {
+  let team = req.params.team;
+  pointsPerEndpoints(team, function(pointsPerEndpoints) {
     res.json(pointsPerEndpoints);
   }, true);
 });

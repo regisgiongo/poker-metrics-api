@@ -1,14 +1,15 @@
 import github from '../config/github';
 import async from 'async';
+import settings from 'config';
 import {onlySprintMilestones, sumIssuesPoints} from '../utils/utils';
 
-const USER = 'ContaAzul';
-const REPO = 'alcatraz';
+export function pointsPerSprint(team, callback) {
+  let githubApi = github(team);
+  let access = settings.github[team];
 
-export function pointsPerSprint(callback) {
-  github.issues.getAllMilestones({
-    user: USER,
-    repo: REPO,
+  githubApi.issues.getAllMilestones({
+    user: access.user,
+    repo: access.repo,
     state: 'closed',
     per_page: 100
   }, (err, res) => {
@@ -17,9 +18,9 @@ export function pointsPerSprint(callback) {
 
     async.each(milestones, (milestone, next) => {
       points[milestone.title] = 0;
-      github.issues.repoIssues({
-        user: USER,
-        repo: REPO,
+      githubApi.issues.repoIssues({
+        user: access.user,
+        repo: access.repo,
         filter: 'all',
         state: 'all',
         milestone: milestone.number,
