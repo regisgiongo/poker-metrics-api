@@ -9,7 +9,7 @@ const api = new Github({
 });
 
 console.log('Yeah');
-console.log(env.GITHUB_TOKEN);
+console.log(process.env.GITHUB_TOKEN);
 
 api.authenticate({
   type: 'oauth',
