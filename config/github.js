@@ -1,6 +1,5 @@
 import Github from 'github';
 import settings from 'config';
-import env from 'env';
 
 const api = new Github({
   version: '3.0.0',
@@ -8,12 +7,9 @@ const api = new Github({
   protocol: 'https'
 });
 
-console.log('Yeah');
-console.log(process.env.GITHUB_TOKEN);
-
 api.authenticate({
   type: 'oauth',
-  token: env.GITHUB_TOKEN || null
+  token: process.env.GITHUB_TOKEN || null
 });
 
 export default api;
