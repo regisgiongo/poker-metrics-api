@@ -24,7 +24,6 @@ const ENDPOINTS = [{
     }];
 
 export function pointsPerEndpoints(team, callback, grouped) {
-  let githubApi = github(team);
   let access = settings.github[team];
 
   getTagsPointsByMilestone((milestoneTagsPoints) => {
@@ -45,7 +44,7 @@ export function pointsPerEndpoints(team, callback, grouped) {
   }
 
   function getTagsPointsByMilestone(callback) {
-    githubApi.issues.getAllMilestones({
+    github.issues.getAllMilestones({
       user: access.user,
       repo: access.repo,
       state: 'closed',
@@ -56,7 +55,7 @@ export function pointsPerEndpoints(team, callback, grouped) {
 
       async.each(milestones, (milestone, next) => {
         issuesByEndpoint[milestone.title] = getEndpointsInitialValues();
-        githubApi.issues.repoIssues({
+        github.issues.repoIssues({
           user: access.user,
           repo: access.repo,
           filter: 'all',

@@ -1,5 +1,6 @@
 import Github from 'github';
 import settings from 'config';
+import env from 'env';
 
 const api = new Github({
   version: '3.0.0',
@@ -7,11 +8,9 @@ const api = new Github({
   protocol: 'https'
 });
 
-export default function(team) {
-  api.authenticate({
-    type: 'oauth',
-    token: settings.github[team].token
-  });
+api.authenticate({
+  type: 'oauth',
+  token: env.GITHUB_TOKEN || null
+});
 
-  return api;
-};
+export default api;
