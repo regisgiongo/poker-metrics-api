@@ -8,6 +8,9 @@ const api = new Github({
   protocol: 'https'
 });
 
+console.log('Yeah');
+console.log(env.GITHUB_TOKEN);
+
 api.authenticate({
   type: 'oauth',
   token: env.GITHUB_TOKEN || null
