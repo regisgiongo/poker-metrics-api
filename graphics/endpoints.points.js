@@ -48,7 +48,8 @@ export function pointsPerEndpoints(team, callback, grouped) {
       user: access.user,
       repo: access.repo,
       state: 'closed',
-      per_page: 100
+      per_page: 100,
+      sort : 'completeness'
     }, (err, res) => {
       let milestones = onlySprintMilestones(res);
       var issuesByEndpoint = {};

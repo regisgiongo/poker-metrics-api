@@ -1,7 +1,16 @@
 export function onlySprintMilestones(milestones) {
   return milestones.filter( (item) => {
-    return item.title.indexOf('Sprint') > -1;
+    return isAlcatrazSprint(item) || is404Sprint(item);
   });
+}
+
+function isAlcatrazSprint(item){
+  return item.title.indexOf('Sprint') > -1;
+}
+
+function is404Sprint(item){
+  var pattern = /(#[0-9])\w+/;
+  return item.title.match(pattern);
 }
 
 export function sumIssuesPoints(issues) {
