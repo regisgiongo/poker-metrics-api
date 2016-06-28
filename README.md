@@ -2,7 +2,7 @@
 
 npm install
 
-npm install -g babel-node
+npm install -g babel-cli
 
 babel-node index
 
